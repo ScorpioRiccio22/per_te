@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Piccolo Percorso per Te, Cuoricina ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5a4bcf;
+            --bg-color: #f4f6fb;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --accent-purple: #a29bfe;
+            --accent-blue: #4a69bd;
+            --box-bg: #f0f3ff;
+            --purple-box-bg: linear-gradient(135deg, #6c5ce7, #5a4bcf);
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 15px;
+            background-image: radial-gradient(#d6e0f5 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 35px 25px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.4s ease-in-out;
+        }
+
+        .step.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1, h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        h1 { font-size: 1.8rem; }
+        h2 { font-size: 1.5rem; }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.25);
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.35);
+        }
+
+        .btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        .password-box {
+            background: var(--box-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px dashed var(--accent-purple);
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .hint-text {
+            font-size: 0.98rem;
+            color: var(--primary);
+            font-weight: 700;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            background: #ffffff;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 18px;
+            border: 2px solid #d6e0f5;
+            border-radius: 30px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-top: 8px;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .error-msg {
+            color: #e53e3e;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .story-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #4a5568;
+            background: var(--box-bg);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .qa-card {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .qa-card:hover {
+            background: var(--box-bg);
+        }
+
+        .qa-question {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.05rem;
+        }
+
+        .qa-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, margin-top 0.3s ease;
+            color: #4a5568;
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .qa-card.open .qa-answer {
+            max-height: 300px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #d6e0f5;
+        }
+
+        .qa-card.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .arrow {
+            transition: transform 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .lock-notice {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .timeline {
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .timeline::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .timeline::-webkit-scrollbar-thumb {
+            background-color: #d6e0f5;
+            border-radius: 10px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            font-size: 1.05rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.95rem;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .btn-pulse {
+            animation: btnPulse 1.8s infinite;
+        }
+
+        @keyframes btnPulse {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3); }
+            50% { transform: scale(1.03); box-shadow: 0 8px 25px rgba(108, 92, 231, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3); }
+        }
+
+        .btn-glow {
+            background: linear-gradient(270deg, #6c5ce7, #a29bfe, #4a69bd);
+            background-size: 400% 400%;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .final-promise {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--purple-box-bg);
+            border: 2px solid var(--accent-purple);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 20px;
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+        }
+
+        .final-promise.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .final-promise-text {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .final-promise-sub {
+            font-size: 1rem;
+            color: #e0e7ff;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .badge-tag {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .center-tag {
+            text-align: center;
+        }
+
+        .icon-header {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- TAPPA 1: BENVENUTO -->
+        <div class="step active" id="step1">
+            <div class="icon-header">✨</div>
+            <h1>Un Piccolo Percorso per Te, Cuoricina</h1>
+            <p class="subtitle">Ho preparato questa piccola esperienza per farti sorridere e scoprire qualcosa in più su di noi. Sei pronta?</p>
+            <button class="btn" onclick="nextStep(2)">Iniziamo! ✨</button>
+        </div>
+
+        <!-- TAPPA 1.5: LA PAROLA MAGICA -->
+        <div class="step" id="step2">
+            <div class="center-tag"><span class="badge-tag">🔒 Accesso Riservato</span></div>
+            <h2>La Parola Magica</h2>
+            <p class="subtitle">Prima di procedere, risolvi questo piccolo indizio per sbloccare il percorso!</p>
+            
+            <div class="password-box">
+                <div class="hint-text">
+                    💡 <strong>Indizio:</strong><br>
+                    "Il soprannome che tutti ti danno ma che io ho rifiutato di usare..."
+                </div>
+                <input type="text" id="magicWord" placeholder="Inserisci la parola magica..." onkeypress="handleKeyPress(event)">
+                <div class="error-msg" id="errorMsg">Ops! Non è quella giusta, riprova ✨</div>
+            </div>
+
+            <button class="btn" onclick="checkPassword()">Sblocca ✨</button>
+        </div>
+
+        <!-- TAPPA 2: L'INIZIO DI TUTTO -->
+        <div class="step" id="step3">
+            <div class="center-tag"><span class="badge-tag">Tappa 1 • Le Origini</span></div>
+            <h2>L'Inizio di Tutto</h2>
+            
+            <div class="story-text">
+                Tutto è iniziato il <strong>3 Luglio</strong> su un'app di incontri... Nessuno dei due si aspettava nulla da quel match, eppure eccoci qui.
+                <br><br>
+                Anche se siamo solo all'inizio del nostro cammino, fin dal nostro primissimo incontro ogni attimo con te è sempre stato unico e speciale.
+                <br><br>
+                Da un inizio un po' travagliato siamo riusciti a ricavare qualcosa di incredibile, che ci accompagnerà per il resto della nostra vita. ✨
+            </div>
+
+            <button class="btn" onclick="nextStep(4)">Continuiamo il percorso ✨</button>
+        </div>
+
+        <!-- TAPPA 3: LE DOMANDE PER TE -->
+        <div class="step" id="step4">
+            <div class="center-tag"><span class="badge-tag">Tappa 2 • I Miei Pensieri</span></div>
+            <h2>Cose che mi chiederesti...</h2>
+            <p class="subtitle" style="margin-bottom: 15px;">Apri e leggi tutte le risposte per sbloccare il pulsante avanti:</p>
+
+            <div class="qa-card" id="qa1" onclick="toggleQA(this, 1)">
+                <div class="qa-question">
+                    <span>☁️ Cos'hai provato la prima volta che ci siamo incontrati?</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="qa-answer">
+                    "Avevo sinceramente paura... paura del tratto di strada, paura che fosse un viaggio fatto 'a vuoto'. E invece non avrei mai immaginato di trovare sin da subito una persona d'oro, così dolce e gentile, capace di conquistarmi in un battito di ciglia!"
+                </div>
+            </div>
+
+            <div class="qa-card" id="qa2" onclick="toggleQA(this, 2)">
+                <div class="qa-question">
+                    <span>☁️ Cosa ti piace di più di me?</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="qa-answer">
+                    "Di te mi piace tutto: il tuo modo di pensare, come vivi le tue giornate, la tua premura, la tua dolcezza e la tua sensibilità. E se devo scegliere cosa mi piace di più esteticamente... beh, senza dubbio il tuo bellissimo sorriso!"
+                </div>
+            </div>
+
+            <div class="qa-card" id="qa3" onclick="toggleQA(this, 3)">
+                <div class="qa-question">
+                    <span>☁️ Perché ho scelto proprio te?</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="qa-answer">
+                    "Perché dopo tanti anni, finalmente grazie a te ho ripreso a credere nel 'per sempre' e a provare delle emozioni e dei sentimenti veri."
+                </div>
+            </div>
+
+            <p class="lock-notice" id="lockNotice">🔒 Leggi tutte e 3 le domande per proseguire!</p>
+            <button class="btn" id="step4Btn" disabled onclick="nextStep(5)">Prosegui ✨</button>
+        </div>
+
+        <!-- TAPPA 4: MEMORY LANE -->
+        <div class="step" id="step5">
+            <div class="center-tag"><span class="badge-tag">Tappa 3 • Memory Lane</span></div>
+            <h2>Le tappe che ci hanno segnato</h2>
+            <p class="subtitle" style="margin-bottom: 15px;">Fai scorrere per ripercorrere la nostra storia:</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-title">1. Il primo banco di prova 📚</div>
+                    <div class="timeline-desc">La settimana di distacco per il tuo esame... Ma appena finito, mi hai cercato subito, ritrovandoti ancora più convinta di noi e della nostra coppia.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">2. Le due settimane lontani e la bufera 🌊</div>
+                    <div class="timeline-desc">Tra Vieste e Gallipoli è sembrato quasi che tutto stesse finendo. Da lì in poi litigi, incomprensioni e quel vaffanculo o quel l'addio che sembrava a un passo... Eppure, puntualmente, ci ri-cercavamo. Volevamo solo rivederci, chiarire e stare insieme. Due caratteri che imparavano a coincidere, due vite ferite che cercavano con forza di sbloccarsi perché intimamente convinte l'uno dell'altra.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">3. I nostri posti del cuore 🌙</div>
+                    <div class="timeline-desc">E poi la magia dei momenti felici: la prima notte su quella collinetta al tuo paese, il secondo incontro sulla spiaggia a Baia Domitia... e tutti i momenti a seguire.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">4. Il valore dei nostri silenzi 🤍</div>
+                    <div class="timeline-desc">Dopo ore e ore di chiacchiere per fare pace, ci lasciavamo andare a carezze, coccole e baci. Ore intere a non dirci più nulla, perché non serviva più parlare: bastava stare lì, insieme. Ogni tuo sguardo, ogni silenzio, ogni abbraccio mi ha segnato la vita e mi ha reso sempre più convinto di volere te.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">5. Quel sabato in macchina ✨</div>
+                    <div class="timeline-desc">Fino a culminare in quel sabato in macchina, dove i nostri cuori erano in perfetta simbiosi e i nostri respiri in totale sintonia. Ogni volta che ci ripenso, so che tutto è perfetto solo quando sono con te.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">6. Il 6 Settembre: La Scelta ✨</div>
+                    <div class="timeline-desc">E poi è arrivato il 6 Settembre. Dopo un ennesimo sgarro di entrambi e l'ennesima ricaduta nella tempesta, abbiamo capito che <strong>il tempo dei giochi era finito</strong>. Abbiamo deciso per un'ultima volta di affrontare tutto e risolvere, arrivando alla scelta vera: quella di stare insieme per davvero. Quella data segna l'inizio ufficiale e maturo della nostra storia.</div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="nextStep(6)">Verso il Finale ✨</button>
+        </div>
+
+        <!-- TAPPA 5: IL MESSAGGIO FINALE CON CLIMAX -->
+        <div class="step" id="step6">
+            <div class="icon-header">💫</div>
+            <div class="center-tag"><span class="badge-tag">A Te, Cuoricina</span></div>
+            <h2>Il Nostro Domani</h2>
+
+            <div class="story-text" style="text-align: center; border-left: none; border-top: 4px solid var(--primary);">
+                Siamo passati attraverso le incertezze, i chilometri, i litigi e le tempeste, ma ne siamo usciti tenendoci per mano e scegliendoci ogni singolo giorno.
+                <br><br>
+                Oggi so che non importa quanto la strada possa essere in salita: finché siamo insieme, ogni momento vale la pena di essere vissuto.
+                <br><br>
+                Grazie per essere la mia certezza, il mio sorriso e la mia persona speciale.
+                <br><br>
+                <strong style="color: var(--primary); font-size: 1.1rem;">Sei pronta a continuare a scrivere questo capitolo insieme a me?</strong>
+            </div>
+
+            <div class="btn-group" id="finalBtnGroup">
+                <button class="btn btn-pulse" onclick="celebrateAndReveal()">Sì, per sempre! ✨</button>
+                <button class="btn btn-glow" onclick="celebrateAndReveal()">Assolutamente sì! ✨</button>
+            </div>
+
+            <div class="final-promise" id="finalPromise">
+                <div class="final-promise-text">
+                    Non te ne pentirai...<br>te lo prometto! 🤍
+                </div>
+                <div class="final-promise-sub">
+                    Insieme, passo dopo passo. ✨
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SECRET_WORD = "stellina"; 
+        const openedQuestions = new Set();
+        const TOTAL_QUESTIONS = 3;
+
+        function nextStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            setTimeout(() => {
+                document.getElementById('step' + stepNumber).classList.add('active');
+            }, 100);
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('magicWord').value.trim().toLowerCase();
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if (input === SECRET_WORD.toLowerCase()) {
+                errorMsg.style.display = 'none';
+                nextStep(3);
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        }
+
+        function toggleQA(card, index) {
+            card.classList.toggle('open');
+            if (card.classList.contains('open')) {
+                openedQuestions.add(index);
+            }
+            
+            checkAllQuestionsRead();
+        }
+
+        function checkAllQuestionsRead() {
+            if (openedQuestions.size === TOTAL_QUESTIONS) {
+                const btn = document.getElementById('step4Btn');
+                const lockNotice = document.getElementById('lockNotice');
+                btn.disabled = false;
+                lockNotice.innerHTML = "✨ Bravissima! Ora puoi proseguire!";
+                lockNotice.style.color = "#2b6cb0";
+            }
+        }
+
+        function celebrateAndReveal() {
+            var duration = 4 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 35, spread: 360, ticks: 70, zIndex: 999 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+              var timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              var particleCount = 50 * (timeLeft / duration);
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 200);
+
+            const btnGroup = document.getElementById('finalBtnGroup');
+            const finalPromise = document.getElementById('finalPromise');
+
+            btnGroup.style.opacity = '0';
+            btnGroup.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                btnGroup.style.display = 'none';
+                finalPromise.classList.add('show');
+            }, 400);
+        }
+    </script>
+</body>
+</html>
